@@ -119,6 +119,7 @@ graph LR
 ```text
 Taiwan-Catering-Industry-2015-2024/
 ├── README.md                                   # 專案分析總覽、ETL 溯源總表與執行說明
+├── requirements.txt                            # Python 相依套件清單
 ├── 資料來源/ (Raw Data - 5大政府機關原始檔案，唯讀不修改)
 │   ├── m1/ T03_消費者物價指數.xml (dataset/8237)
 │   ├── m2/ 經濟部餐飲業經營實況調查報告 (menu_id=9431)：表9成本結構 (8份PDF)、營運困境表 (9份PDF)
@@ -126,8 +127,9 @@ Taiwan-Catering-Industry-2015-2024/
 │   ├── m4/ 財政部全國營業稅籍登記.csv (dataset/9400)、商業署月度歇業家數統計.csv (dataset/29268)
 │   └── m6/ 證交所公開資訊觀測站 (MOPS t164sb04)：六大上市櫃餐飲集團合併綜合損益表 (6份HTML)
 │
-└── py/ (Source Code & Database - 9支標準化 Python ETL 腳本與 SQLite 資料庫)
-    ├── catering_analysis.sqlite                # 關聯式資料庫 (集中儲存 10 張標準化 _clean 成品資料表)
+└── py/ (Source Code & Database - 全自動管線、Python ETL 腳本與資料庫壓縮檔)
+    ├── run_pipeline.py                         # [Orchestrator] 全自動 ETL 管線編排器 (內建大型檔案缺失優雅降級機制)
+    ├── catering_analysis.sqlite.zip            # 關聯式資料庫壓縮檔 (集中儲存 10 張標準化 _clean 成品資料表)
     ├── T01_T02_T03_m1_etl_revenue_and_cpi.py   # [Level 1] 解析 CPI 與名目營收，執行物價平減 (產出 P9-P11)
     ├── 00_rename_m2_survey_pdfs.py             # [Pre-ETL] 批次標準化調查報告 PDF 命名與年份對齊
     ├── T05_T06_m2_load_survey_data.py          # [Level 1] 萃取三大成本率與營運困境比例 (產出 P5-P7)
