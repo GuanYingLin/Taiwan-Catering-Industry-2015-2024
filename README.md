@@ -159,13 +159,22 @@ Taiwan-Catering-Industry-2015-2024/
 * **食材耗損控制變數（產品線收斂）**：由於微型單店缺乏聯合採購議價能力，需透過精簡菜單品項（SKU 收斂）、提高共用食材率與半成品耗損控制，以穩定食材成本率，確保長期存續之財務空間。
 
 ---
-
 ## 4. 附錄：官方原始資料來源與 ETL 溯源總表 (Data Governance)
 
-### 表一：官方原始資料來源清冊
+為維持資料工程之審計軌跡與可驗證性，本專案提供完整之「五大部會原始資料清冊」與「全模組 ETL 延伸溯源表」。
+
+👉 📊 **[點擊開啟：線上公開完整版 ETL 溯源與資料治理試算表 (Google Sheets)](https://docs.google.com/spreadsheets/d/1NGXTpjD4F5hliJCM73f-_YXu_pQgJCzZQPGIvaMUyEoq4/edit?usp=sharing)**  
+*(建議透過線上試算表檢視，享有完整欄寬延展、凍結表頭與直覺之試算體驗)*
+
+---
+
+<details>
+<summary><b>🔍 點擊展開：表一、官方原始資料來源清冊 (Data Sources Catalog)</b></summary>
+
+<br>
 
 | 序號 | 對應模組與圖表 | 資料集或系統名稱 | 來源機關 | 資料格式 | 官方平臺規格代碼 | 官方平臺驗證連結 | 主要資料欄位與內容說明 |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| :---: | :--- | :--- | :--- | :---: | :--- | :---: | :--- |
 | **1** | 模組一 (T03 原生 / T01 延伸) | 消費者物價特殊分類指數 | 行政院主計總處 | XML | 政府資料開放平臺 dataset/8237 | [連結](https://data.gov.tw/dataset/8237) | 包含總指數（不含食物、不含蔬果及能源等核心物價）之每月原始值與年增率（%），基期為民國110年=100。 |
 | **2** | 模組一 (T02 原生 / T01 延伸) | 批發、零售及餐飲業營業額指數 | 經濟部統計處 | CSV | 批發、零售及餐飲業營業額指數 CSV | [連結](https://data.gov.tw/dataset/16365) | 包含批發、零售及餐飲業各大類與中分類之每月營業額指數，基期為民國110年=100。 |
 | **3** | 模組一 (T02 詮釋資料) | 統計處批發、零售及餐飲業營業額指數 | 經濟部 | 網頁 / API | 政府資料開放平臺 dataset/16365 | [連結](https://data.gov.tw/dataset/16365) | 序號2之資料集在政府開放平臺上的詮釋資料(Metadata)與介接說明頁面，主要欄位包含行業代碼、行業別、資料期、統計值及計量單位。 |
@@ -175,10 +184,17 @@ Taiwan-Catering-Industry-2015-2024/
 | **7** | 模組六 (T08_1 原生 / T08_2 延伸) | 公開資訊觀測站 (合併綜合損益表) | 臺灣證券交易所 | 系統 / HTML | 公開資訊觀測站 MOPS (t164sb04) | [連結](https://mopsov.twse.com.tw/mops/web/t164sb04) | 台灣上市、上櫃、興櫃及公開發行公司之重大訊息、營收、財務報表（113年第4季合併綜合損益表）、董監持股等公開法定資訊查詢系統。 |
 | **8** | 模組四 (T09 原生) | 商業登記歇業家數－按行業分 | 經濟部商業發展署 | CSV | 政府資料開放平臺 dataset/29268 | [連結](https://data.gov.tw/dataset/29268) | 記錄全國各行業別每月歇業解散登記家數，主要擷取欄位為年月別、住宿及餐飲業家數。 |
 
-### 表二：全專案 ETL 模組延伸溯源總表
+</details>
+
+<br>
+
+<details>
+<summary><b>🔍 點擊展開：表二、全專案 ETL 模組延伸溯源總表 (Data Lineage & Audit Log)</b></summary>
+
+<br>
 
 | 故事頁碼 | 圖表編號 | ETL 層級 | 對應模組 | 對應執行腳本 (`py/`) | 資料來源分類與模組延伸溯源 | 官方驗證連結 | 本地原始資料規格 (`資料來源/`) | 產出檔案 (`py/成品/`) | 關鍵欄位 (Features) | 核心商業邏輯與稽核重點 |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| :---: | :---: | :---: | :---: | :--- | :--- | :---: | :--- | :--- | :--- | :--- |
 | **P4** | T10 | Level 1 | 模組四 | `T09_T10_m4_etl_registry_and_closings.py`<br>*(前置: `00_inspect_m4_registry.py`)* | 【原生資料】財政部：全國營業(稅籍)登記資料集 (dataset/9400) | [驗證](https://data.gov.tw/dataset/9400) | `m4/T10_m4_raw_active_registry_snapshot_raw.csv` | `T10_m4_active_registry_snapshot_clean.csv` | `統一編號`, `營業人名稱`, `行業代號`, `設立日期`, `使用統一發票` | **母體結構篩選**：篩選 56 餐飲業代碼，計算在營母體中免稅小規模營業人（73.83%）與一般營業人（26.17%）之比例。 |
 | **P5** | T05_1 | Level 1 | 模組二 | `T05_T06_m2_load_survey_data.py`<br>*(前置: `00_rename_m2_survey_pdfs.py`)* | 【原生資料】經濟部：批發、零售及餐飲業經營實況調查報告 (menu_id=9431) | [驗證](https://www.moea.gov.tw/Mns/dos/content/ContentLink.aspx?menu_id=9431) | `m2/2015~2024_m2_cost_structure_raw.pdf` (共 8 份 PDF) | `T05_m2_chart_cost_structure_annual_clean.csv` | `year`, `revenue`, `cogs`, `wage_expense`, `rent_expense`, `operating_profit`, `cogs_ratio`, `wage_ratio`, `rent_ratio`, `profit_margin` | **成本結構計算**：正規化食材 (46.01%)、人事 (26.53%)、租金 (5.47%) 三大成本率，建立平均營業利益率區間（2016、2021 普查年留空）。 |
 | **P6** | T05_2 | Level 1 | 模組二_延伸 | `T05_T06_m2_load_survey_data.py` | 【延伸自模組二 T05_1】底層來源：經濟部經營實況調查報告 (menu_id=9431) | [驗證](https://www.moea.gov.tw/Mns/dos/content/ContentLink.aspx?menu_id=9431) | 共用模組二 T05_1 之 8 份成本結構 PDF 原始檔 | `T05_m2_chart_cost_structure_annual_clean.csv` | `year`, `cogs_ratio`, `wage_ratio`, `rent_ratio`, `profit_margin` | **相關性檢驗**：直接引用模組二 T05_1 產出，計算食材、人事與租金成本率對營業利益率之線性關聯。 |
@@ -191,3 +207,5 @@ Taiwan-Catering-Industry-2015-2024/
 | **P13** | T08_1 | Level 1 | 模組六 | `T08_m6_parse_listed_groups_financials.py` | 【原生資料】證交所：公開資訊觀測站－合併綜合損益表 (MOPS t164sb04) | [驗證](https://mopsov.twse.com.tw/mops/web/t164sb04) | `m6/2024_六大集團_income_statement_raw.html` (共 6 份 HTML) | `T08_m6_chart_listed_groups_financials_clean.csv` | `year`, `company_code`, `company_name`, `market_segment`, `research_task`, `tw_revenue_weight`, `revenue_mil`, `operating_profit_mil` | **上市櫃集團財報解析**：解析 6 大集團財報，乘上台灣事業群權重，結算本土營收規模與營業利益率。 |
 | **P14** | T08_2 | Level 3 | 模組六_延伸 | `T08_m6_calc_capital_monopoly.py` | 【延伸自模組五 T04 與模組六 T08_1】財政部全國稅籍 ＋ 公開資訊觀測站 | [驗證](https://mopsov.twse.com.tw/mops/web/t164sb04) | 終端結算（依賴模組五 T04 應稅營收大盤 與 模組六 T08_1 集團台灣營收） | `T08_v2_chart_capital_monopoly_clean.csv` | `Metric`, `Category`, `Value_Pct`, `Label_Text` | **企業營收集中度結算**：依賴 T04 應稅營收大盤與 T08_1 台灣營收，計算大型連鎖集團於應稅市場之營收佔比。 |
 | **P15** | T09 | Level 1 | 模組四 | `T09_T10_m4_etl_registry_and_closings.py` | 【原生資料】經濟部商業發展署：商業登記歇業家數－按行業分 (dataset/29268) | [驗證](https://data.gov.tw/dataset/29268) | `m4/T09_m4_chart_catering_closings_monthly_raw.csv` | `T09_m4_chart_catering_closings_monthly_clean.csv` | `year_month`, `catering_closings_count` | **歇業家數時序彙整**：擷取每月歇業解散登記家數，計算十年累計歇業量與前後階段月均變動。 |
+
+</details>
