@@ -142,7 +142,49 @@ Taiwan-Catering-Industry-2015-2024/
     └── 成品/ (Processed Clean Data - 供 Tableau 直連繪圖之 11 份乾淨 CSV 檔案)
         └── T01 ~ T10 標準化 _clean.csv
 ```
+### 自動化管線編排與異常攔截迴路 (Pipeline Orchestration & Fallback Logic)
 
+本專案內建主控台編排腳本（`py/run_pipeline.py`），具備雙層前置門禁（Pre-flight Check）與互動式優雅降級機制，確保外部環境於未下載 322MB 大型稅籍底冊之狀態下，依然能無縫驗證全套衍生模型：
+
+```mermaid
+flowchart LR
+    subgraph S1 ["階段一：環境檢測與決策門禁"]
+        direction TB
+        START(["啟動 run_pipeline.py"]) --> GATE1{"322MB 底冊存在?"}
+        
+        GATE1 -->|"存在"| MODE_FULL["【完整重現模式】<br/>佇列 9 支腳本"]
+        GATE1 -->|"不存在"| PROMPT{"終端互動選單"}
+        
+        PROMPT -->|"輸入 1"| EXIT_SAFE["【安全終止】<br/>待手動部署後重跑"]
+        PROMPT -->|"輸入 2 / --fallback"| MODE_FAST["【快速驗證模式】<br/>1. 載入預洗快照至 SQLite<br/>2. 佇列保留 7 支腳本"]
+    end
+
+    subgraph S2 ["階段二：DAG 調度與異常監控"]
+        direction TB
+        LOOP["排程調度迴圈<br/>(依序呼叫 .py)"] --> GATE2{"returncode == 0?"}
+        
+        GATE2 -->|"異常 (!= 0)"| ERR["【報錯中斷】<br/>印出 stderr 鎖定缺檔"]
+        GATE2 -->|"正常 (== 0)"| NEXT{"佇列執行完畢？"}
+        
+        NEXT -->|"否"| LOOP
+        NEXT -->|"是"| DONE(["管線執行完成<br/>產出 11 份 CSV 與 SQLite"])
+    end
+
+    %% 跨子圖水平銜接
+    MODE_FULL --> LOOP
+    MODE_FAST --> LOOP
+
+    style START fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#e0f2fe
+    style GATE1 fill:#331a00,stroke:#f97316,stroke-width:2px,color:#ffedd5
+    style GATE2 fill:#331a00,stroke:#f97316,stroke-width:2px,color:#ffedd5
+    style PROMPT fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
+    style MODE_FULL fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
+    style MODE_FAST fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
+    style EXIT_SAFE fill:#330a0a,stroke:#ef4444,stroke-width:1.5px,color:#fee2e2
+    style ERR fill:#330a0a,stroke:#ef4444,stroke-width:2px,color:#fee2e2
+    style DONE fill:#042f2e,stroke:#38bdf8,stroke-width:2px,color:#f0fdf4
+    linkStyle default stroke:#38bdf8,stroke-width:1.5px
+```
 ---
 
 ## 3. 研究結論與營運變數分析：微型餐飲之商業模式評估
