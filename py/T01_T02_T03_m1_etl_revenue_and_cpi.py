@@ -83,7 +83,7 @@ df_cpi_parsed = pd.DataFrame(cpi_records)
 # 執行樞紐分析轉置：將垂直長表重構為水平時間序列寬表
 df_cpi_pivot = df_cpi_parsed.pivot_table(index="year_month", columns="item", values="val").reset_index()
 
-# 指標映射與 2021 基期特徵欄位鎖定
+# 指標映射與 2021 基期特徵欄位鎖定（採用主計總處特殊分類 XML：對比「不含食物基線」與「剔除生鮮蔬果短期暴漲暴跌後之實質物價水準」）
 df_t03 = pd.DataFrame({
     "year_month": df_cpi_pivot["year_month"],
     "cpi_total": df_cpi_pivot["總指數(不含食物)(指數基期：民國110年=100)"],
@@ -105,7 +105,7 @@ df_t01 = pd.merge(
     on="year_month"
 )
 
-# 執行平減除算公式：(名目營收指數 / 食物類物價指數) * 100，還原實質物理消費量
+# 執行平減除算公式：(名目營收指數 / 不含蔬果物價指數) * 100，還原實質物理消費量
 df_t01["real_revenue_index_calc"] = round(
     (df_t01["catering_revenue_index"] / df_t01["cpi_total"]) * 100, 2
 )
@@ -118,10 +118,9 @@ df_t01.to_csv(FINISHED_DIR / "T01_m1_chart_real_vs_nominal_revenue_clean.csv", i
 df_t02.to_csv(FINISHED_DIR / "T02_m1_catering_revenue_monthly_clean.csv", index=False, encoding="utf-8-sig")
 df_t03.to_csv(FINISHED_DIR / "T03_m1_macro_cpi_monthly_clean.csv", index=False, encoding="utf-8-sig")
 
-conn = sqlite3.connect(DB_PATH)
-df_t01.to_sql("T01_m1_chart_real_vs_nominal_revenue_clean", conn, if_exists="replace", index=False)
-df_t02.to_sql("T02_m1_catering_revenue_monthly_clean", conn, if_exists="replace", index=False)
-df_t03.to_sql("T03_m1_macro_cpi_monthly_clean", conn, if_exists="replace", index=False)
-conn.close()
+with sqlite3.connect(DB_PATH) as conn:
+    df_t01.to_sql("T01_m1_chart_real_vs_nominal_revenue_clean", conn, if_exists="replace", index=False)
+    df_t02.to_sql("T02_m1_catering_revenue_monthly_clean", conn, if_exists="replace", index=False)
+    df_t03.to_sql("T03_m1_macro_cpi_monthly_clean", conn, if_exists="replace", index=False)
 
 print("模組一 (T01, T02, T03) 處理完成，各輸出 120 筆官方實際值資料。")

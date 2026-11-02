@@ -103,8 +103,7 @@ df_t04 = pd.DataFrame(t04_data)
 # 6. 標準化產出與雙軌持久化儲存 (Dual-track Persistence: Clean CSV & SQLite)
 df_t04.to_csv(FINISHED_DIR / "T04_m5_chart_pareto_stress_test_2024_clean.csv", index=False, encoding="utf-8-sig")
 
-conn = sqlite3.connect(DB_PATH)
-df_t04.to_sql("T04_m5_chart_pareto_stress_test_2024_clean", conn, if_exists="replace", index=False)
-conn.close()
+with sqlite3.connect(DB_PATH) as conn:
+    df_t04.to_sql("T04_m5_chart_pareto_stress_test_2024_clean", conn, if_exists="replace", index=False)
 
 print("模組五 (T04) 方案 S 門檻壓力測試計算完成。")

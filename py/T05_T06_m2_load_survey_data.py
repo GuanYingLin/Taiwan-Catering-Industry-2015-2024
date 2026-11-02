@@ -164,9 +164,8 @@ df_t06 = pd.DataFrame([obstacles_data[y] for y in sorted(obstacles_data.keys())]
 df_t05.to_csv(FINISHED_DIR / "T05_m2_chart_cost_structure_annual_clean.csv", index=False, encoding="utf-8-sig")
 df_t06.to_csv(FINISHED_DIR / "T06_m2_chart_operating_obstacles_annual_clean.csv", index=False, encoding="utf-8-sig")
 
-conn = sqlite3.connect(DB_PATH)
-df_t05.to_sql("T05_m2_chart_cost_structure_annual_clean", conn, if_exists="replace", index=False)
-df_t06.to_sql("T06_m2_chart_operating_obstacles_annual_clean", conn, if_exists="replace", index=False)
-conn.close()
+with sqlite3.connect(DB_PATH) as conn:
+    df_t05.to_sql("T05_m2_chart_cost_structure_annual_clean", conn, if_exists="replace", index=False)
+    df_t06.to_sql("T06_m2_chart_operating_obstacles_annual_clean", conn, if_exists="replace", index=False)
 
 print("模組二 (T05, T06) 剛性成本與營運困境時序資料庫寫入完成。")

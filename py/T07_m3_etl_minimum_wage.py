@@ -83,8 +83,7 @@ df_t07 = (
 # 6. 標準化成品與雙軌持久化儲存 (Dual-track Persistence: Clean CSV & SQLite)
 df_t07.to_csv(FINISHED_DIR / "T07_m3_chart_minimum_wage_monthly_clean.csv", index=False, encoding="utf-8-sig")
 
-conn = sqlite3.connect(DB_PATH)
-df_t07.to_sql("T07_m3_chart_minimum_wage_monthly_clean", conn, if_exists="replace", index=False)
-conn.close()
+with sqlite3.connect(DB_PATH) as conn:
+    df_t07.to_sql("T07_m3_chart_minimum_wage_monthly_clean", conn, if_exists="replace", index=False)
 
 print("模組三 (T07) 基本工資調幅序列處理完成，共輸出 120 個月數據。")

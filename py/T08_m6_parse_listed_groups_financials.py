@@ -7,7 +7,6 @@
 透過非結構化標籤剝離演算法萃取營業收入、營業成本與營業利益，並導入台灣事業群營收權重，
 精確剝離跨國海外子公司貢獻，以對齊國內稅籍母體分母，實證資本集團在食材與工資通膨下的規模防禦力。
 """
-
 import re
 import sqlite3
 from pathlib import Path
@@ -37,14 +36,14 @@ TARGET_COMPANIES: List[Dict[str, str]] = [
     {"code": "1268", "name": "漢來美食", "file": "2024_1268_hilai_income_statement_raw.html", "segment": "高端精緻百匯", "task": "高客單價商務宴會轉嫁力"}
 ]
 
-# 台灣事業群營收權重 (分部財務報告權重校正，對齊國內稅籍母體)
+# 台灣事業群營收權重 (依據各集團 2024 年度合併財務報告附註之「部門別/地區別財務資訊」境內營收佔比定錨，以剝離海外合併營收並對齊國內稅籍母體)
 TW_WEIGHTS: Dict[str, float] = {
-    "2727": 0.78,  # 王品：扣除中國大陸事業群
-    "2753": 0.80,  # 八方雲集：扣除美國及海外門市
-    "7705": 1.00,  # 三商餐飲：100% 台灣本土內需
-    "2729": 0.95,  # 瓦城：扣除少數海外事業
-    "1259": 0.95,  # 安心餐飲：扣除澳洲與中國海外投資
-    "1268": 0.98   # 漢來美食：以台灣本土據點為主
+    "2727": 0.78,  # 王品：依財報地區別資訊扣除中國大陸事業群營收佔比
+    "2753": 0.80,  # 八方雲集：依財報地區別資訊扣除香港、美國等海外門市營收佔比
+    "7705": 1.00,  # 三商餐飲：100% 台灣本土內需市場營運
+    "2729": 0.95,  # 瓦城：扣除少數海外事業營收佔比
+    "1259": 0.95,  # 安心餐飲：扣除澳洲與中國大陸等海外轉投資營收佔比
+    "1268": 0.98   # 漢來美食：以台灣本土營運據點為主
 }
 
 def parse_mops_income_statement(html_path: Path) -> Dict[int, Dict[str, float]]:
@@ -130,8 +129,7 @@ df_t08 = pd.DataFrame(records)
 out_csv = FINISHED_DIR / "T08_m6_chart_listed_groups_financials_clean.csv"
 df_t08.to_csv(out_csv, index=False, encoding="utf-8-sig")
 
-conn = sqlite3.connect(DB_PATH)
-df_t08.to_sql("T08_m6_chart_listed_groups_financials_clean", conn, if_exists="replace", index=False)
-conn.close()
+with sqlite3.connect(DB_PATH) as conn:
+    df_t08.to_sql("T08_m6_chart_listed_groups_financials_clean", conn, if_exists="replace", index=False)
 
 print(f"模組六 (T08_1) 上市集團財報解析完成，共處理 {len(records)} 筆年度觀測記錄。")

@@ -25,7 +25,6 @@ DATA_DIR = BASE_DIR / "資料來源" / "m4"
 FINISHED_DIR = SCRIPT_DIR / "成品"
 DB_PATH = SCRIPT_DIR / "catering_analysis.sqlite"
 FINISHED_DIR.mkdir(parents=True, exist_ok=True)
-conn = sqlite3.connect(DB_PATH)
 
 # 2. 經濟部商工行政月度歇業家數時序清洗 (T09 Extraction & Normalization)
 closing_raw_file = DATA_DIR / "T09_m4_chart_catering_closings_monthly_raw.csv"
@@ -54,7 +53,9 @@ else:
 
 # T09 標準化產出與雙軌持久化儲存 (Clean CSV & SQLite)
 df_t09.to_csv(FINISHED_DIR / "T09_m4_chart_catering_closings_monthly_clean.csv", index=False, encoding="utf-8-sig")
-df_t09.to_sql("T09_m4_chart_catering_closings_monthly_clean", conn, if_exists="replace", index=False)
+
+with sqlite3.connect(DB_PATH) as conn:
+    df_t09.to_sql("T09_m4_chart_catering_closings_monthly_clean", conn, if_exists="replace", index=False)
 
 # 3. 財政部全國稅籍母體串流分塊載入與代碼純化 (T10 Stream Chunking & Code Filtering)
 reg_raw_file = DATA_DIR / "T10_m4_raw_active_registry_snapshot_raw.csv"
@@ -79,7 +80,8 @@ df_t10 = pd.concat(catering_chunks, ignore_index=True)
 
 # T10 標準化產出與雙軌持久化儲存 (Clean CSV & SQLite)
 df_t10.to_csv(FINISHED_DIR / "T10_m4_active_registry_snapshot_clean.csv", index=False, encoding="utf-8-sig")
-df_t10.to_sql("T10_m4_active_registry_snapshot_clean", conn, if_exists="replace", index=False)
-conn.close()
+
+with sqlite3.connect(DB_PATH) as conn:
+    df_t10.to_sql("T10_m4_active_registry_snapshot_clean", conn, if_exists="replace", index=False)
 
 print("模組四 (T09, T10) 稅籍母體與月度歇業序列處理完成！")
