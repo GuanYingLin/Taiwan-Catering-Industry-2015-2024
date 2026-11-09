@@ -34,7 +34,9 @@
 
 本系統採用「原始資料唯讀隔離 (Immutability)」與「三層式 ETL 管線」架構。五大機關開放資料集皆透過 Python 自動化腳本完成清洗、物價平減與門檻推估，最終同步匯流至 `SQLite` 關聯式資料庫與 Tableau 視覺化成品區。
 
-### 全系統資料血緣與 ETL 流向圖 (Data Lineage)
+<details>
+<summary><b>【點擊展開】全系統資料血緣與 ETL 流向圖 (Data Lineage)</b></summary>
+<br>
 
 ```mermaid
 graph LR
@@ -81,23 +83,19 @@ graph LR
     style S1 fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#f8fafc
     style S2 fill:#020617,stroke:#3b82f6,stroke-width:2px,color:#f8fafc
     style S3 fill:#022c22,stroke:#10b981,stroke-width:2px,color:#f8fafc
-
     style M1_RAW fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc
     style M2_RAW fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc
     style M3_RAW fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc
     style M4_RAW fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc
     style M6_RAW fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc
-
     style M2_PRE fill:#1c1917,stroke:#78716c,stroke-dasharray: 4 2,stroke-width:1.5px,color:#e7e5e4
     style M4_PRE fill:#1c1917,stroke:#78716c,stroke-dasharray: 4 2,stroke-width:1.5px,color:#e7e5e4
-
     style M1_PROC fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#e0f2fe
     style M2_PROC fill:#331a00,stroke:#f97316,stroke-width:2px,color:#ffedd5
     style M3_PROC fill:#330a0a,stroke:#ef4444,stroke-width:2px,color:#fee2e2
     style M4_PROC fill:#330a0a,stroke:#ef4444,stroke-width:2px,color:#fee2e2
     style M5_PROC fill:#330a0a,stroke:#ef4444,stroke-width:2px,color:#fee2e2
     style M6_PROC fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#e0f2fe
-
     style M1_VIEW fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
     style M2_VIEW fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
     style M3_VIEW fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
@@ -105,11 +103,13 @@ graph LR
     style M5_VIEW fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
     style M6_VIEW fill:#064e3b,stroke:#22c55e,stroke-width:1.5px,color:#f0fdf4
     style FINAL fill:#042f2e,stroke:#38bdf8,stroke-width:2px,color:#f0fdf4
-
     linkStyle default stroke:#38bdf8,stroke-width:2px
 ```
+</details>
 
-### 專案目錄拓樸架構 (Project Topology)
+<details>
+<summary><b>【點擊展開】專案目錄拓樸架構 (Project Topology)</b></summary>
+<br>
 
 ```text
 Taiwan-Catering-Industry-2015-2024/
@@ -137,6 +137,7 @@ Taiwan-Catering-Industry-2015-2024/
     └── 成品/ (Processed Clean Data - 供 Tableau 直連繪圖之 11 份乾淨 CSV 檔案)
         └── T01 ~ T10 標準化 _clean.csv
 ```
+</details>
 
 本專案內建全自動主控台編排腳本（`py/run_pipeline.py`），具備環境自動偵測與優雅降級（Graceful Degradation）機制，確保外部環境於未下載 322MB 大型稅籍底冊之狀態下，無須人工干預即可自動掛載預洗快照並無縫驗證全套衍生模型。
 
@@ -149,6 +150,10 @@ pip install -r requirements.txt
 # 2. 一鍵啟動全自動 ETL 編排器（自動偵測 322MB 原始檔並切換執行模式）
 python py/run_pipeline.py
 ```
+
+<details>
+<summary><b>【點擊展開】環境自動偵測與優雅降級機制 (Graceful Degradation Diagram)</b></summary>
+<br>
 
 ```mermaid
 flowchart LR
@@ -183,6 +188,7 @@ flowchart LR
     style DONE fill:#042f2e,stroke:#38bdf8,stroke-width:2px,color:#f0fdf4
     linkStyle default stroke:#38bdf8,stroke-width:1.5px
 ```
+</details>
 
 ---
 
@@ -216,7 +222,9 @@ flowchart LR
 
 → [**點擊開啟：線上公開完整版 ETL 溯源與資料治理試算表 (Google Sheets)**](https://docs.google.com/spreadsheets/d/13e0Y81r3GjA72m0p7L03l0c93U0k2fG8/view)
 
-### 官方開放資料集來源清冊 (五大部會)
+<details>
+<summary><b>【點擊展開】官方開放資料集來源清冊 (五大部會)</b></summary>
+<br>
 
 | 序號 | 對應模組與圖表 | 資料集或系統名稱 | 來源機關 | 資料格式 | 官方平臺規格代碼 | 官方平臺驗證連結 | 主要資料欄位與內容說明 |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -228,8 +236,11 @@ flowchart LR
 | 6 | 模組四 (T10 原生) / 模組五 (T04 延伸) / 模組六 (T08_2 延伸) | 全國營業(稅籍)登記資料集 | 財政部財政資訊中心 | CSV (壓縮檔) | 政府資料開放平臺 dataset/9400 | [連結](https://data.gov.tw/dataset/9400) | 全國營運中企業之稅籍資料，欄位含統一編號、營業人名稱、資本額、設立日期、組織別、使用統一發票、營業地址及多組行業代號與名稱。 |
 | 7 | 模組六 (T08_1 原生 / T08_2 延伸) | 公開資訊觀測站 (合併綜合損益表) | 臺灣證券交易所 | 系統 / HTML | 公開資訊觀測站 MOPS (t164sb04) | [連結](https://mops.twse.com.tw/) | 台灣上市、上櫃、興櫃及公開發行公司之重大訊息、營收、財務報表（113年第4季合併綜合損益表）、董監持股等公開法定資訊查詢系統。 |
 | 8 | 模組四 (T09 原生) | 商業登記歇業家數－按行業分 | 經濟部商業發展署 | CSV | 政府資料開放平臺 dataset/29268 | [連結](https://data.gov.tw/dataset/29268) | 記錄全國各行業別每月歇業解散登記家數，主要擷取欄位為年月別、住宿及餐飲業家數。 |
+</details>
 
-### 全模組 ETL 實證溯源總表 (Pipeline Traceability)
+<details>
+<summary><b>【點擊展開】全模組 ETL 實證溯源總表 (Pipeline Traceability)</b></summary>
+<br>
 
 | 故事頁碼 | 圖表編號 | ETL 層級 | 對應模組 | 對應執行腳本 (`py/`) | 資料來源分類與模組延伸溯源 | 官方驗證 | 本地原始資料規格 (`資料來源/`) | 產出檔案 (`py/成品/`) | 關鍵欄位 (Features) | 核心商業邏輯與稽核重點 |
 | :---: | :---: | :---: | :---: | :--- | :--- | :---: | :--- | :--- | :--- | :--- |
@@ -245,3 +256,4 @@ flowchart LR
 | **P13** | T08_1 | Level 1 | 模組六 | `T08_m6_parse_listed_groups_financials.py` | 【原生資料】證交所：公開資訊觀測站－合併綜合損益表 (MOPS t164sb04) | [驗證](https://mops.twse.com.tw/) | `m6/2024_六大集團_income_statement_raw.html` (共 6 份 HTML) | `T08_m6_chart_listed_groups_financials_clean.csv` | year, company_code, company_name, market_segment, research_task, tw_revenue_weight, revenue_mil, operating_profit_mil | 上市櫃集團財報解析：解析 6 大集團財報，乘上台灣事業群權重，結算本土營收規模與營業利益率。 |
 | **P14** | T08_2 | Level 3 | 模組六_延伸 | `T08_m6_calc_capital_monopoly.py` | 【延伸自模組五 T04 與模組六 T08_1】財政部全國稅籍 ＋ 公開資訊觀測站 | [驗證](https://mops.twse.com.tw/) | 終端結算（依賴模組五 T04 應稅營收大盤 與 模組六 T08_1 集團台灣營收） | `T08_v2_chart_capital_monopoly_clean.csv` | Metric, Category, Value_Pct, Label_Text | 企業營收集中度結算：依賴 T04 應稅營收大盤與 T08_1 台灣營收，計算大型連鎖集團於應稅市場之營收佔比。 |
 | **P15** | T09 | Level 1 | 模組四 | `T09_T10_m4_etl_registry_and_closings.py` | 【原生資料】經濟部商業發展署：商業登記歇業家數－按行業分 (dataset/29268) | [驗證](https://data.gov.tw/dataset/29268) | `m4/T09_m4_chart_catering_closings_monthly_raw.csv` | `T09_m4_chart_catering_closings_monthly_clean.csv` | year_month, catering_closings_count | 歇業家數時序彙整：擷取每月歇業解散登記家數，計算十年累計歇業量與前後階段月均變動。 |
+</details>
