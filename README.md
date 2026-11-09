@@ -220,7 +220,7 @@ flowchart LR
 
 為維持資料工程之審計軌跡與可驗證性，本專案提供完整之「五大部會原始資料清冊」與「全模組 ETL 延伸溯源表」。
 
-→ [**點擊開啟：線上公開完整版 ETL 溯源與資料治理試算表 (Google Sheets)**](https://docs.google.com/spreadsheets/d/13e0Y81r3GjA72m0p7L03l0c93U0k2fG8/view)
+→ [**點擊開啟：線上公開完整版 ETL 溯源與資料治理試算表 (Google Sheets)**](https://docs.google.com/spreadsheets/d/1NGXTpjD4F5hlUCm73f-_YXu_pQgJCeZQPGhaMuyEoq4/preview?usp=sharing)
 
 <details>
 <summary><b>【點擊展開】官方開放資料集來源清冊 (五大部會)</b></summary>
